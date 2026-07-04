@@ -1,0 +1,130 @@
+Linh Tran
+0 30:03
+Linh Tran 0 phút 3 giây
+Automatically.
+Linh Tran 0 phút 7 giây
+OK, yeah, sorry. Yeah, thank you for remind me, reminding me about that. Yeah, so again, the cost schedule, so...
+Linh Tran 0 phút 16 giây
+Um...
+Linh Tran 0 phút 18 giây
+Just to mention again that we have lab, we have sync lab section from Luu.
+Linh Tran 0 phút 26 giây
+Right, so we call this six lab session, but actually we still have the lab, the first lab session starting this week with the name we getting started. OK, yeah, and then we have some other manual assessment like this, yeah, so let me go into more detail here in.
+Linh Tran 0 phút 45 giây
+How much it account for?
+Linh Tran 0 phút 50 giây
+Yeah, here.
+Linh Tran 0 phút 53 giây
+Lab report, so it's account for 15%, in Blackwidth, so you just have two in Blackwidth and it account for 10%.
+Linh Tran 1 phút 5 giây
+OK, yeah. And then for a group project, it will account for the total of 50%, include the initial design for 10% and final report implementation 40% and only one major in graph test here account for 25%.
+Linh Tran 1 phút 24 giây
+Ky.
+Linh Tran 1 giờ 4 phút 48 giây
+You and I, and you run on your own computer, right?
+Linh Tran 1 giờ 4 phút 54 giây
+Sorry, with the writing, yeah, but then when you run the Q&A, it will ask you to generate a target system.
+Linh Tran 1 giờ 5 phút 5 giây
+So, what does it mean by target system here? So, you know that Q&A is either OS, right? So, it means that when you generate a target system, you will have a small version of Q&A there, and then you put it into a target system.
+Linh Tran 1 giờ 5 phút 22 giây
+Okay, yeah, so what it have here now?
+Linh Tran 1 giờ 5 phút 26 giây
+Is the way that you implement the Khiem Act?
+Linh Tran 1 giờ 5 phút 31 giây
+Actually, you see from the, the, the, the, it does not really call it Q Connect, it's called a new Ginel call, yeah, so you will put a new Ginel call here on the device, right, and you run a Q Connect here, so that you can run, you can send a command to run it.
+Linh Tran 1 giờ 5 phút 52 giây
+So, when you run, you send it here, but if you run it in debugging, then you can send a command and you can see the output here.
+Linh Tran 1 giờ 6 phút
+Okay, so the way that you deploy the Q Connect OS into another device, or in our course, we use a virtual port.
+Linh Tran 1 giờ 6 phút 11 giây
+Virtual box, right? Virtual box, so you run this like virtual machine here on this one, and you communicate.
+Linh Tran 1 giờ 6 phút 19 giây
+Ky.
+Linh Tran 1 giờ 6 phút 21 giây
+So, to keep that in mind, and you should clearly distinguish which one need a host development host, which one need a target device to run.
+Linh Tran 1 giờ 6 phút 32 giây
+OK, and in the assignment later, you might have the case that you have multiple target device, yeah, multiple target device system, and I need to talk to each other, right? So, let's say that you have this here a BC, this one is another BC, and this one you run.
+Linh Tran 1 giờ 6 phút 51 giây
+You have a Q&A call here, this one you have Q&A call here, and let's say you have not only two, but three or four of them, and then to talk communicate.
+Linh Tran 1 giờ 7 phút 3 giây
+OK.
+Linh Tran 1 giờ 7 phút 6 giây
+Yeah, this one, how to get started. So, I will give you a link on Canvas, so you just need to follow them. OK, yeah, and I remember that right, so they see for development development computer.
+Linh Tran 1 giờ 7 phút 26 giây
+Yeah, and this is a Taka system.
+Linh Tran 1 giờ 7 phút 29 giây
+Right, so when you have a tucker sitter.
+Linh Tran 1 giờ 7 phút 32 giây
+If you will deploy the new Ginel, and it can also come together with the rival file system, your own application.
+Linh Tran 1 giờ 7 phút 44 giây
+OK, this one is the development computer, so you have the IT there, the Quốc IT, you have development tool, you have library, you have documentation.
+Linh Tran 1 giờ 7 phút 54 giây
+Right, so I, the way that you do here can deploy.
+Linh Tran 1 giờ 8 phút
+And you deploy, and you can run on the book.
+Linh Tran 1 giờ 8 phút 4 giây
+Run Akiba.
+Linh Tran 1 giờ 8 phút 7 giây
+Yeah, and after you deploy it, even that your remote development system, you can still use this one independently.
+Linh Tran 1 giờ 8 phút 14 giây
+Yeah, because we have the OS there, so it can run independently, and I said you can come connect with another target system to run without development anymore.
+Linh Tran 1 giờ 8 phút 27 giây
+OK.
+Linh Tran 1 giờ 8 phút 30 giây
+Yeah, sample around.
+Linh Tran 1 giờ 8 phút 33 giây
+So, um...
+Linh Tran 1 giờ 8 phút 36 giây
+This one is just to do some printing, right? So, in the lab, after you complete all the installation, then you can just copy this one and run, yeah, but you need to follow the step in the lab to be able to be able to run this.
+Linh Tran 1 giờ 8 phút 53 giây
+Yeah, and you see the output here, so you could read out some information, and say, what is the number of the CPU available, what is the BID of the process, and what is the machine Hoc? Okay, so just basic reading.
+Linh Tran 1 giờ 9 phút 10 giây
+Yeah, preview C function. Yeah, so if you are forgot about the C function, then you can use this one.
+Linh Tran 1 giờ 9 phút 20 giây
+OK, this is a live C library, right?
+Linh Tran 1 giờ 9 phút 24 giây
+From here.
+Linh Tran 1 giờ 9 phút 26 giây
+And then you can set on the version there, just to find.
+Linh Tran 1 giờ 9 phút 31 giây
+When will you have the RMIT license download, but then in the express it, so I will do it one time per day, right? So, let's say after 5 P.m. I see on the list there, I will grant a license for you.
+Linh Tran 1 giờ 9 phút 48 giây
+Yeah, for the link, I put that in the chat there, also I come back.
+Linh Tran 1 giờ 9 phút 57 giây
+OK, so in summary, our RTOS is becoming more important due to the advanced technology. Yeah, and in real life, we will have the software part, the firm on a weekly heart system there. Yeah, and you see that.
+Linh Tran 1 giờ 10 phút 16 giây
+The real time is very important in some scenario or some system, let's say, the cars, the airplane, the medical device, the literary device, right?
+Linh Tran 1 giờ 10 phút 28 giây
+Yeah, I put there some I tried a slide in a pending. You can read for yourself if you want to go a bit deeper, yeah, but the coating and recover.
+Linh Tran 1 giờ 10 phút 41 giây
+OK.
+Linh Tran 1 giờ 10 phút 43 giây
+Yeah, so again, that's it for everyone.
+Linh Tran 1 giờ 10 phút 46 giây
+Any questions before we finish our lecture today?
+Linh Tran 1 giờ 10 phút 53 giây
+Yeah.
+Linh Tran 1 giờ 10 phút 55 giây
+Again, you might see that the lecture might be a lot of concept. Yeah, things are very abstract.
+Linh Tran 1 giờ 11 phút 2 giây
+Right, but I want to mention again that in the lab document, when you do it, you wish to see the thing more clearly, OK?
+Linh Tran 1 giờ 11 phút 16 giây
+Yeah.
+Linh Tran 1 giờ 11 phút 18 giây
+All right, so if you don't have any more questions, so we finished our lecture here today, everyone. So thank you for joining the class. Kate have a question there. Can I ask whether the lab in class or...
+Linh Tran 1 giờ 11 phút 31 giây
+Asato.
+Linh Tran 1 giờ 11 phút 33 giây
+Yeah, the lab will be, of course, in class, right? Yeah, so the lab section will be in class.
+Linh Tran 1 giờ 11 phút 41 giây
+Yeah, following your timetable.
+Linh Tran 1 giờ 11 phút 46 giây
+Okay.
+Linh Tran 1 giờ 11 phút 49 giây
+Yep, good question. Any other question, everyone?
+Linh Tran 1 giờ 11 phút 54 giây
+Yeah.
+Linh Tran 1 giờ 12 phút
+Alright, yeah, thank you guys. Have a good day. See you soon in class in the tutorial session. Yeah.
+Linh Tran 1 giờ 12 phút 8 giây
+Okay, bye, everyone. See you.

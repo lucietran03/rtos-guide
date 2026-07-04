@@ -1,0 +1,22 @@
+Lecture 2 material: EEET2588-Lecture02.pptx 
+Covers: Concurrent Processes, Thread Attributes, POSIX Message Queues and Message Passing
+
+Example files:
+sched_policy.c
+
+Resource Utilisation Test Example files:
+StressTestCPU.c
+CPU_Usage.c
+Resource_Utilization.c
+
+POSIX Message Queue Example:
+mq_send.c
+mq_receive.c
+
+Named Native Message Passing Example:
+MsgPass-Server.c
+MsgPass-Client.c
+
+Unnamed Native Message Passing Example:
+ConnCh-MsgPass-Server.c
+ConnCh-MsgPass-Client.c

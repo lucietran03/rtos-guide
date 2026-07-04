@@ -1,0 +1,120 @@
+/*
+ * see: Protecting Your Data in a Multi-Threaded App, by John Fehr
+ * http://www.qnx.com/developers/articles/article_301_2.html
+ *
+ * overlap3.c
+ *
+ * See "Protecting Your Data in a Multi-Threaded App"
+ *
+ * Uses mutual exclusion (mutex) to ensure safety (result is correct)
+ * and has two separate threads using a and b
+ * Result is correct
+ *
+*/
+#include <stdlib.h>
+#include <stdio.h>
+#include <pthread.h>
+
+ typedef struct {
+  int a;
+  int b;
+  int result;
+  int result2;
+  int use_count;
+  int use_count2;
+  int max_use;
+  int max_use2;
+  pthread_mutex_t mutex; // add a mutex object into the structure we want to protect
+} app_data;
+
+
+void *subtracter_thread(void *data)
+{
+	int use=0;
+	app_data *td=(app_data*)data;
+	while(use<td->max_use2)
+	{
+		pthread_mutex_lock(&td->mutex);		//lock the function to make sure the variables are protected
+		if (td->a==50)
+		{
+			td->result2-=(td->a+td->b);
+			use++;
+			td->use_count2++;
+		}
+		pthread_mutex_unlock(&td->mutex);	//unlock the functions to release the variables for use by other functions
+		usleep(1);
+	}
+	return 0;
+}
+
+
+void *user_thread(void *data)
+{
+	 int uses=0;
+	 app_data *td=(app_data*)data;
+	 while(uses<td->max_use)
+	 {
+		 pthread_mutex_lock(&td->mutex);	//lock the function to make sure the variables are protected
+		 if (td->a==5)
+		 {
+			 td->result+=(td->a+td->b);
+			 td->use_count++;
+			 uses++;
+		 }
+		 pthread_mutex_unlock(&td->mutex);	//unlock the functions to release the variables for use by other functions
+		 usleep(1);
+	 }
+	 return 0;
+}
+
+void *changer_thread(void *data)
+{
+	 app_data *td=(app_data*)data;
+	 while ((td->use_count+td->use_count2)<(td->max_use+td->max_use2))
+	 {
+		 pthread_mutex_lock(&td->mutex);	//lock the function to make sure the variables are protected
+		 if (td->a==5)
+		 {
+			 td->a=50;
+			 td->b=td->a+usleep(1000);		//fake a CPU-intensive calculation for a with a usleep(1000) call
+		 }
+		 else
+		 {
+			 td->a=5;
+			 td->b=td->a+usleep(1000);		//fake a CPU-intensive calculation for b with a usleep(1000) call
+		 }
+		 pthread_mutex_unlock(&td->mutex);	//unlock the functions to release the variables for use by other functions
+		 usleep(1);
+	 }
+	 return 0;
+}
+
+int main(int argc, char *argv[]) {
+	printf("Welcome to the QNX Momentics IDE\n");
+
+	pthread_t ct,ut,st;
+	app_data td={5,5,0,0,0,0,100,100};		// changed the max_use2 value from 0 (in previous examples) to 100
+	void *retval;
+
+	// Create the mutex
+	pthread_mutex_init(&td.mutex,NULL);		// pass NULL as the attr parameter to use the default attributes for the mutex
+
+	pthread_create(&ut,NULL,user_thread,&td);
+	pthread_create(&ct,NULL,changer_thread,&td);
+	pthread_create(&st,NULL,subtracter_thread,&td);
+
+	// wait for all threads to finish
+	pthread_join(ct,&retval);
+	pthread_join(ut,&retval);
+	pthread_join(st,&retval);
+
+	// Destroy the mutex
+	pthread_mutex_destroy(&td.mutex);
+
+	// print results
+	printf("result should be %d, is %d\n",td.max_use*(5+5),td.result);
+	printf("result2 should be %d, is %d\n",-(td.max_use2*(50+50)),td.result2);
+
+	printf("\nMain Terminating....");
+	return EXIT_SUCCESS;
+}
