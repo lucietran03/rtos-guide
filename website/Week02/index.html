@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Week 2: Concurrent Processes & Message Passing - RTS Learning</title>
+    <meta name="description" content="Tuần 2: Thread lifecycle, POSIX APIs, scheduling policies, message passing với 10 code examples chi tiết" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+  </head>
+
+  <body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar-container">
+      <div class="sidebar-header">
+        <h2>Week 2</h2>
+        <p class="sidebar-subtitle">Concurrent Processes & Message Passing</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <h3>Content Sections</h3>
+        <ul>
+          <li><a href="#processes-threads" class="lecture-link exam-critical">Processes vs Threads</a></li>
+          <li><a href="#thread-lifecycle" class="lecture-link exam-critical">Thread Lifecycle</a></li>
+          <li><a href="#scheduling" class="lecture-link exam-critical">Scheduling Policies</a></li>
+          <li><a href="#message-passing" class="lecture-link exam-critical">Message Passing</a></li>
+          <li><a href="#synchronization-overview" class="lecture-link exam-critical">Synchronization Overview</a></li>
+          <li><a href="#detailed-examples" class="lecture-link">Detailed Code Examples</a></li>
+          <li><a href="#lab-integration" class="lab-link">Lab Integration</a></li>
+        </ul>
+
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="../index.html">Course Overview</a></li>
+          <li><a href="../Week01/index.html">Week 1</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <ul class="breadcrumb-list">
+            <li class="breadcrumb-item"><a href="../index.html" class="breadcrumb-link">Course</a></li>
+            <li class="breadcrumb-item"><span class="breadcrumb-current">Week 2</span></li>
+          </ul>
+        </nav>
+
+        <!-- Content Header -->
+        <div class="content-header">
+          <h1>Week 2: Concurrent Processes & Message Passing</h1>
+          <div class="meta">
+            <span class="content-tag lecture">Lectures</span>
+            <span class="content-tag lab">Labs</span>
+            <span class="content-tag exam-critical">Heavy Implementation</span>
+            <span class="content-tag qnx">Code Examples</span>
+          </div>
+        </div>
+
+        <!-- Processes vs Threads -->
+        <section class="section" id="processes-threads">
+          <h2>Processes vs Threads</h2>
+
+          <div class="callout info">
+            <div class="callout-title">Foundation Concepts</div>
+            <div class="callout-content">
+              <p>Trước khi đi sâu vào thread programming, cần hiểu sự khác nhau giữa processes và threads - đây là quyết định kiến trúc quan trọng trong real-time systems.</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4 class="card-title">Process</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Một chương trình đang chạy với vùng nhớ riêng biệt, hoàn toàn tách biệt với các chương trình khác.</p>
+                <p><strong>Hình dung:</strong> Như các căn hộ trong chung cư - mỗi căn có địa chỉ riêng, có tường ngăn cách, không ai vào được căn của người khác.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Đảm bảo an toàn - nếu một chương trình bị lỗi và crash, nó không làm ảnh hưởng đến các chương trình khác.</p>
+                <div class="callout info">
+                  <div class="callout-content">
+                    <p><strong>Ví dụ thực tế:</strong> Khi bạn mở Word và Chrome cùng lúc, đó là 2 processes riêng biệt. Nếu Chrome crash, Word vẫn chạy bình thường.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Thread</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Một luồng công việc trong cùng một chương trình, có thể chia sẻ dữ liệu với các luồng khác.</p>
+                <p><strong>Hình dung:</strong> Như những người sống chung trong một căn hộ - cùng dùng chung tủ lạnh, phòng khách, nhưng mỗi người có giường riêng để ngủ.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Cho phép một chương trình làm nhiều việc cùng lúc - ví dụ vừa tải file, vừa hiển thị giao diện, vừa phát nhạc.</p>
+                <div class="callout info">
+                  <div class="callout-content">
+                    <p><strong>Ví dụ thực tế:</strong> Khi bạn xem video YouTube, có một thread hiển thị hình ảnh, một thread phát âm thanh, một thread tải dữ liệu từ internet.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspect</th>
+                  <th>Process</th>
+                  <th>Thread</th>
+                  <th>Khi nào sử dụng</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Memory Sharing</strong></td>
+                  <td>Isolated (safe)</td>
+                  <td>Shared (fast but risky)</td>
+                  <td>Process cho an toàn, Thread cho tốc độ</td>
+                </tr>
+                <tr>
+                  <td><strong>Communication</strong></td>
+                  <td>IPC required</td>
+                  <td>Direct memory access</td>
+                  <td>Process cho hệ thống phân tán, Thread cho cục bộ</td>
+                </tr>
+                <tr>
+                  <td><strong>Creation Cost</strong></td>
+                  <td>Expensive (~ms)</td>
+                  <td>Cheap (~μs)</td>
+                  <td>Process cho tác vụ dài hạn, Thread cho tác vụ thường xuyên</td>
+                </tr>
+                <tr>
+                  <td><strong>Fault Tolerance</strong></td>
+                  <td>High isolation</td>
+                  <td>One crash kills all</td>
+                  <td>Process cho hệ thống quan trọng, Thread cho hiệu suất</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Giải thích chi tiết bảng so sánh</h3>
+
+          <div class="callout info">
+            <div class="callout-title">Tại sao cần hiểu bảng này?</div>
+            <div class="callout-content">
+              <p>Đây là decision matrix giúp bạn quyết định khi nào dùng Process vs Thread trong real applications. Mỗi dòng giải thích một khía cạnh quan trọng.</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4 class="card-title">1. Memory Sharing (Chia sẻ bộ nhớ)</h4>
+              <div class="card-description">
+                <p><strong>Process - Isolated (an toàn):</strong></p>
+                <p><strong>Ý nghĩa:</strong> Mỗi process có vùng nhớ riêng biệt, hoàn toàn tách biệt.</p>
+                <p><strong>Hình dung:</strong> Như mỗi gia đình sống ở nhà riêng - không ai có thể vào lấy đồ nhà người khác.</p>
+                <p><strong>Kết quả:</strong> An toàn nhưng không thể share data trực tiếp.</p>
+
+                <p><strong>Thread - Shared (nhanh nhưng rủi ro):</strong></p>
+                <p><strong>Ý nghĩa:</strong> Các threads trong cùng process dùng chung vùng nhớ.</p>
+                <p><strong>Hình dung:</strong> Như nhiều người sống chung một nhà - dùng chung tủ lạnh, có thể lấy đồ của nhau.</p>
+                <p><strong>Kết quả:</strong> Nhanh vì share data dễ dàng, nhưng có thể xung đột.</p>
+
+                <div class="callout success">
+                  <div class="callout-content">
+                    <p><strong>Khi nào chọn gì:</strong></p>
+                    <p><strong>Process:</strong> Khi cần an toàn tuyệt đối (banking software, medical devices)</p>
+                    <p><strong>Thread:</strong> Khi cần chia sẻ data thường xuyên (video player: một thread decode, một thread hiển thị)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">2. Communication (Giao tiếp)</h4>
+              <div class="card-description">
+                <p><strong>Process - IPC required:</strong></p>
+                <p><strong>Ý nghĩa:</strong> Processes muốn nói chuyện phải dùng Inter-Process Communication (pipes, message queues, sockets).</p>
+                <p><strong>Hình dung:</strong> Như hai gia đình muốn nói chuyện phải gọi điện thoại hoặc gửi thư.</p>
+                <p><strong>Kết quả:</strong> Phức tạp nhưng có thể giao tiếp qua mạng.</p>
+
+                <p><strong>Thread - Direct memory access:</strong></p>
+                <p><strong>Ý nghĩa:</strong> Threads giao tiếp bằng cách đọc/ghi trực tiếp vào shared memory.</p>
+                <p><strong>Hình dung:</strong> Như những người trong cùng nhà để lời nhắn trên tủ lạnh.</p>
+                <p><strong>Kết quả:</strong> Rất nhanh nhưng chỉ trong cùng một chương trình.</p>
+
+                <div class="callout success">
+                  <div class="callout-content">
+                    <p><strong>Khi nào chọn gì:</strong></p>
+                    <p><strong>Process:</strong> Hệ thống phân tán (web server + database server)</p>
+                    <p><strong>Thread:</strong> Trong cùng một ứng dụng (text editor: một thread typing, một thread spell-check)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">3. Creation Cost (Chi phí tạo)</h4>
+              <div class="card-description">
+                <p><strong>Process - Expensive (~ms):</strong></p>
+                <p><strong>Ý nghĩa:</strong> Tạo process mới mất nhiều thời gian (milliseconds) vì OS phải setup memory space, file handles, etc.</p>
+                <p><strong>Hình dung:</strong> Như xây một ngôi nhà mới - cần thời gian setup nền móng, điện nước, đồ đạc.</p>
+
+                <p><strong>Thread - Cheap (~μs):</strong></p>
+                <p><strong>Ý nghĩa:</strong> Tạo thread mới rất nhanh (microseconds) vì chỉ cần thêm một execution context.</p>
+                <p><strong>Hình dung:</strong> Như thêm một người vào nhà hiện tại - chỉ cần thêm giường, còn lại dùng chung.</p>
+
+                <div class="callout success">
+                  <div class="callout-content">
+                    <p><strong>Khi nào chọn gì:</strong></p>
+                    <p><strong>Process:</strong> Tác vụ dài hạn, ít tạo mới (database server chạy cả ngày)</p>
+                    <p><strong>Thread:</strong> Tác vụ thường xuyên, tạo nhiều (web server tạo thread cho mỗi request)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">4. Fault Tolerance (Khả năng chịu lỗi)</h4>
+              <div class="card-description">
+                <p><strong>Process - High isolation:</strong></p>
+                <p><strong>Ý nghĩa:</strong> Nếu một process crash, các process khác vẫn chạy bình thường.</p>
+                <p><strong>Hình dung:</strong> Như một nhà cháy, các nhà khác vẫn an toàn.</p>
+
+                <p><strong>Thread - One crash kills all:</strong></p>
+                <p><strong>Ý nghĩa:</strong> Nếu một thread crash (segmentation fault, null pointer), toàn bộ process chết.</p>
+                <p><strong>Hình dung:</strong> Như một người trong nhà gây cháy, cả nhà đều bị ảnh hưởng.</p>
+
+                <div class="callout success">
+                  <div class="callout-content">
+                    <p><strong>Khi nào chọn gì:</strong></p>
+                    <p><strong>Process:</strong> Hệ thống quan trọng (flight control, nuclear plant) - một lỗi không được làm sập cả hệ thống</p>
+                    <p><strong>Thread:</strong> Khi cần hiệu suất cao và có thể chấp nhận risk (game, media player)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3>Ví dụ thực tế Decision Making</h3>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ứng dụng</th>
+                  <th>Chọn gì</th>
+                  <th>Lý do chính</th>
+                  <th>Trade-off chấp nhận</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Web Browser</strong></td>
+                  <td>Process cho mỗi tab</td>
+                  <td>Fault tolerance - một tab crash không làm mất tabs khác</td>
+                  <td>Tốn memory nhiều hơn</td>
+                </tr>
+                <tr>
+                  <td><strong>Video Game</strong></td>
+                  <td>Threads cho graphics, AI, physics</td>
+                  <td>Cần share data liên tục + hiệu suất cao</td>
+                  <td>Một thread lỗi có thể crash game</td>
+                </tr>
+                <tr>
+                  <td><strong>Database Server</strong></td>
+                  <td>Process cho mỗi client connection</td>
+                  <td>Isolation - một client lỗi không ảnh hưởng clients khác</td>
+                  <td>IPC phức tạp cho shared data</td>
+                </tr>
+                <tr>
+                  <td><strong>Text Editor</strong></td>
+                  <td>Threads cho UI, auto-save, spell-check</td>
+                  <td>Cần share document data + responsive UI</td>
+                  <td>Phải cẩn thận với thread synchronization</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout warning">
+            <div class="callout-title">Golden Rule cho Decision</div>
+            <div class="callout-content">
+              <p><strong>Câu hỏi quyết định:</strong></p>
+              <ol>
+                <li><strong>Safety first:</strong> Lỗi có thể gây thiệt hại nghiêm trọng không? → Process</li>
+                <li><strong>Performance critical:</strong> Cần tốc độ cực cao và share data nhiều? → Thread</li>
+                <li><strong>Distributed system:</strong> Chạy trên nhiều máy khác nhau? → Process</li>
+                <li><strong>Frequent creation:</strong> Tạo/hủy thường xuyên? → Thread</li>
+              </ol>
+            </div>
+          </div>
+
+          <h3>ASCII Diagram: Thread Lifecycle States</h3>
+
+          <div class="callout qnx">
+            <div class="callout-title">Thread State Transitions</div>
+            <div class="callout-content">
+              <pre><code>
+┌─────────────────────────────────────────────────────────────┐
+│                    Thread Lifecycle                         │
+└─────────────────────────────────────────────────────────────┘
+
+    pthread_create()
+         │
+         ▼
+    ┌─────────┐    scheduler picks    ┌──────────┐
+    │ READY   │ ──────────────────→   │ RUNNING  │
+    │ (chờ)   │                       │ (chạy)   │
+    └─────────┘                       └──────────┘
+         ▲                                 │
+         │                                 │
+         │ resource available              │ wait for resource
+         │                                 │ (I/O, mutex, etc.)
+         │                                 ▼
+    ┌─────────┐                       ┌──────────┐
+    │ BLOCKED │ ◄───────────────────── │ BLOCKED  │
+    │ (bị chặn│                       │ (chờ đợi)│
+    └─────────┘                       └──────────┘
+
+                  pthread_exit() hoặc return
+                          │
+                          ▼
+                    ┌──────────┐
+                    │   DEAD   │
+                    │ (kết thúc)│
+                    └──────────┘
+
+Giải thích:
+• READY → RUNNING: Scheduler chọn thread có priority cao nhất
+• RUNNING → BLOCKED: Thread cần chờ I/O, mutex, hoặc condition
+• BLOCKED → READY: Resource available, thread sẵn sàng chạy lại
+• RUNNING → DEAD: Thread hoàn thành và exit
+</code></pre>
+            </div>
+          </div>
+
+          <h3>ASCII Diagram: Process vs Thread Memory Layout</h3>
+
+          <div class="callout qnx">
+            <div class="callout-title">Memory Architecture Comparison</div>
+            <div class="callout-content">
+              <pre><code>
+PROCESSES (Isolated Memory)           THREADS (Shared Memory)
+╔═══════════════════════════╗        ╔═══════════════════════════╗
+║        Process A          ║        ║        Process            ║
+║  ┌─────────────────────┐  ║        ║  ┌─────────────────────┐  ║
+║  │   Code Section      │  ║        ║  │   Code Section      │  ║
+║  ├─────────────────────┤  ║        ║  │    (Shared)         │  ║
+║  │   Data Section      │  ║        ║  ├─────────────────────┤  ║
+║  ├─────────────────────┤  ║        ║  │   Global Data       │  ║
+║  │   Heap              │  ║        ║  │    (Shared)         │  ║
+║  ├─────────────────────┤  ║        ║  ├─────────────────────┤  ║
+║  │   Stack             │  ║        ║  │ Thread 1 Stack      │  ║
+║  └─────────────────────┘  ║        ║  ├─────────────────────┤  ║
+╚═══════════════════════════╝        ║  │ Thread 2 Stack      │  ║
+                                     ║  ├─────────────────────┤  ║
+╔═══════════════════════════╗        ║  │ Thread 3 Stack      │  ║
+║        Process B          ║        ║  └─────────────────────┘  ║
+║  ┌─────────────────────┐  ║        ╚═══════════════════════════╝
+║  │   Code Section      │  ║
+║  ├─────────────────────┤  ║        Key Differences:
+║  │   Data Section      │  ║        • Processes: Hoàn toàn tách biệt
+║  ├─────────────────────┤  ║        • Threads: Shared code/data,
+║  │   Heap              │  ║                   riêng stack
+║  ├─────────────────────┤  ║
+║  │   Stack             │  ║        Communication:
+║  └─────────────────────┘  ║        • Processes: Qua IPC (chậm)
+╚═══════════════════════════╝        • Threads: Direct memory (nhanh)
+</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Thread Lifecycle -->
+        <section class="section" id="thread-lifecycle">
+          <h2>Thread Lifecycle</h2>
+
+          <div class="callout exam">
+            <div class="callout-title">Quan trọng cho Programming</div>
+            <div class="callout-content">
+              <p>Hiểu thread states và transitions là rất quan trọng để debug các vấn đề concurrency trong labs.</p>
+            </div>
+          </div>
+
+          <h3>Thread States trong QNX</h3>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4 class="card-title">READY State (Sẵn sàng)</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Thread đã chuẩn bị xong mọi thứ và sẵn sàng chạy, nhưng đang chờ đến lượt sử dụng CPU.</p>
+                <p><strong>Hình dung:</strong> Như học sinh đã chuẩn bị bài xong, giơ tay chờ cô gọi lên bảng - sẵn sàng nhưng phải chờ lượt.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Đảm bảo công bằng - các thread chờ theo thứ tự ưu tiên, thread quan trọng hơn sẽ được chạy trước.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">RUNNING State (Đang chạy)</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Thread đang thực sự làm việc, đang sử dụng CPU để chạy code.</p>
+                <p><strong>Hình dung:</strong> Như học sinh đang đứng ở bảng giải bài - đang có quyền sử dụng bảng và sự chú ý của cả lớp.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Thực hiện công việc thực sự của chương trình. Chỉ có một thread chạy trên mỗi CPU core tại một thời điểm.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">BLOCKED State (Bị chặn)</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Thread đang chờ điều gì đó xảy ra (đọc file, nhận tin nhắn, chờ khóa) nên không thể tiếp tục.</p>
+                <p><strong>Hình dung:</strong> Như học sinh đang chờ cô fotocopy đề bài - không thể làm gì khác được, phải chờ đề về.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Tiết kiệm tài nguyên CPU - thay vì chờ một cách vô ích, thread nhường CPU cho thread khác.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">DEAD State (Đã kết thúc)</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Thread đã hoàn thành nhiệm vụ và kết thúc, không còn chạy nữa.</p>
+                <p><strong>Hình dung:</strong> Như học sinh đã nộp bài và ra khỏi phòng thi - không còn tham gia vào hệ thống nữa.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Cần dọn dẹp để giải phóng bộ nhớ và tài nguyên mà thread đã sử dụng.</p>
+              </div>
+            </div>
+          </div>
+
+          <h3>pthread Programming Pattern - Tại sao cần và dùng như thế nào</h3>
+
+          <div class="callout info">
+            <div class="callout-title">Đây là standard pattern cho Real-Time Systems</div>
+            <div class="callout-content">
+              <p>Trong real-time programming, ta luôn phải explicitly configure thread behavior để đảm bảo predictable performance.</p>
+            </div>
+          </div>
+
+          <h4>Giải thích từng bước - TẠI SAO cần</h4>
+
+          <div class="grid-1">
+            <div class="card">
+              <h5 class="card-title">Step 1: Khai báo variables để handle thread</h5>
+              <div class="card-description">
+                <pre><code>pthread_t thread_id;      // Để reference đến thread sau khi tạo
+pthread_attr_t attr;      // Để config cách thread sẽ hoạt động</code></pre>
+                <p><strong>Tại sao cần:</strong> Giống như bạn cần số điện thoại để gọi ai đó, ta cần thread_id để control thread sau này.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <h5 class="card-title">Step 2: Configure thread behavior TRƯỚC KHI tạo</h5>
+              <div class="card-description">
+                <pre><code>pthread_attr_init(&attr);                              // Reset attributes về default
+pthread_attr_setschedpolicy(&attr, SCHED_FIFO);       // Chọn scheduling: FIFO = real-time
+pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED); // Dùng config ta vừa set</code></pre>
+                <p><strong>Tại sao cần:</strong></p>
+                <ul>
+                  <li><strong>SCHED_FIFO:</strong> Thread sẽ chạy cho đến khi block hoặc yield - KHÔNG bị time-slice interrupt</li>
+                  <li><strong>PTHREAD_EXPLICIT_SCHED:</strong> Bắt OS phải dùng config ta vừa set, không inherit từ parent thread</li>
+                  <li><strong>Kết quả:</strong> Thread behavior predictable, phù hợp real-time</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h5 class="card-title">Step 3: Tạo thread với config đã setup</h5>
+              <div class="card-description">
+                <pre><code>pthread_create(&thread_id, &attr, thread_function, &args);</code></pre>
+                <p><strong>Giải thích parameters:</strong></p>
+                <ul>
+                  <li><strong>&thread_id:</strong> Nơi lưu ID để reference thread sau này</li>
+                  <li><strong>&attr:</strong> Config ta vừa setup ở step 2</li>
+                  <li><strong>thread_function:</strong> Function mà thread sẽ chạy</li>
+                  <li><strong>&args:</strong> Data truyền vào function</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h5 class="card-title">Step 4: Wait for thread completion và cleanup</h5>
+              <div class="card-description">
+                <pre><code>pthread_join(thread_id, NULL);  // Chờ thread kết thúc và cleanup</code></pre>
+                <p><strong>Tại sao cần:</strong></p>
+                <ul>
+                  <li><strong>Đồng bộ:</strong> Main thread chờ worker thread hoàn thành</li>
+                  <li><strong>Cleanup:</strong> OS thu hồi resources của thread</li>
+                  <li><strong>Avoid zombie threads:</strong> Threads kết thúc nhưng chưa cleanup sẽ waste memory</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <h4>Ví dụ thực tế trong Labs</h4>
+
+          <div class="callout success">
+            <div class="callout-title">Lab 2 Example: Temperature Monitoring</div>
+            <div class="callout-content">
+              <pre><code>// Lab 2: Tạo thread monitor nhiệt độ cao priority
+void* temperature_monitor(void* args) {
+    while (1) {
+        int temp = read_sensor();
+        if (temp > 80) {
+            emergency_shutdown();  // Critical task!
+        }
+        sleep(1);
+    }
+}
+
+int main() {
+    pthread_t temp_thread;
+    pthread_attr_t attr;
+
+    // Setup high priority cho critical monitoring
+    pthread_attr_init(&attr);
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+
+    // Set priority 50 (cao hơn default priority 10)
+    struct sched_param param;
+    param.sched_priority = 50;
+    pthread_attr_setschedparam(&attr, &param);
+
+    // Tạo thread với high priority config
+    pthread_create(&temp_thread, &attr, temperature_monitor, NULL);
+
+    // Main thread làm việc khác...
+    do_other_work();
+
+    // Wait for monitoring thread (nếu có exit condition)
+    pthread_join(temp_thread, NULL);
+}</code></pre>
+              <p><strong>Tại sao pattern này quan trọng:</strong></p>
+              <ul>
+                <li>Temperature monitoring PHẢI có priority cao để không miss critical events</li>
+                <li>SCHED_FIFO đảm bảo thread không bị interrupt bởi time slicing</li>
+                <li>Nếu dùng default config, thread có thể chạy chậm và miss emergency</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <div class="callout-title">Trong tất cả labs, pattern này để...</div>
+            <div class="callout-content">
+              <ol>
+                <li><strong>Lab 2:</strong> Tạo threads với controlled priority cho tasks khác nhau</li>
+                <li><strong>Lab 3:</strong> Ensure threads accessing shared resources có correct priority</li>
+                <li><strong>Lab 4:</strong> Setup producer/consumer threads với appropriate scheduling</li>
+                <li><strong>Lab 6:</strong> Tạo communication threads với predictable timing</li>
+              </ol>
+              <p><strong>Bottom line:</strong> Không dùng pattern này = thread behavior không predictable = không phải real-time system!</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Scheduling -->
+        <section class="section" id="scheduling">
+          <h2>Scheduling Policies</h2>
+
+          <div class="callout exam">
+            <div class="callout-title">Core Real-Time Concept</div>
+            <div class="callout-content">
+              <p><strong>QNX Golden Rule:</strong> Highest priority ready task PHẢI chạy ngay lập tức</p>
+            </div>
+          </div>
+
+          <h3>Scheduling Policies Comparison</h3>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Policy</th>
+                  <th>Behavior</th>
+                  <th>Priority Range</th>
+                  <th>Use Case</th>
+                  <th>Real-Time Quality</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>SCHED_FIFO</strong></td>
+                  <td>Run until block/yield</td>
+                  <td>1-63</td>
+                  <td>Hard real-time tasks</td>
+                  <td>Deterministic</td>
+                </tr>
+                <tr>
+                  <td><strong>SCHED_RR</strong></td>
+                  <td>Round-robin time slicing</td>
+                  <td>1-63</td>
+                  <td>Time-shared real-time</td>
+                  <td>Bounded response</td>
+                </tr>
+                <tr>
+                  <td><strong>SCHED_OTHER</strong></td>
+                  <td>System dependent</td>
+                  <td>Variable</td>
+                  <td>Non-real-time tasks</td>
+                  <td>Best effort</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Priority Management</h3>
+
+          <div class="callout info">
+            <div class="callout-title">Priority Numbers trong QNX</div>
+            <div class="callout-content">
+              <p><strong>Range:</strong> 1-63 (higher number = higher priority)</p>
+              <p><strong>Default:</strong> 10 cho SCHED_FIFO threads</p>
+              <p><strong>Critical rule:</strong> Priority 63 thread sẽ preempt priority 1 thread immediately</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Message Passing -->
+        <section class="section" id="message-passing">
+          <h2>Message Passing</h2>
+
+          <p>QNX cung cấp hai mechanisms chính cho inter-process communication:</p>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4 class="card-title">POSIX Message Queues</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Hệ thống hộp thư điện tử cho phép các chương trình gửi tin nhắn cho nhau mà không cần chờ đối phương online.</p>
+                <p><strong>Hình dung:</strong> Như hộp thư email - bạn gửi email cho bạn bè, không cần biết họ có trực tuyến không, họ sẽ đọc khi tiện.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Cho phép các phần của chương trình liên lạc mà không bị đơ - người gửi có thể tiếp tục làm việc khác.</p>
+                <div class="callout info">
+                  <div class="callout-content">
+                    <p><strong>Ví dụ:</strong> Phần tải nhạc gửi tin "tải xong" vào hộp thư, phần phát nhạc đọc khi sẵn sàng.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">QNX Native Messaging</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Hệ thống liên lạc trực tiếp giữa các phần của chương trình, phải chờ phản hồi ngay lập tức.</p>
+                <p><strong>Hình dung:</strong> Như gọi điện thoại - bạn gọi, chờ người kia bắt máy và trả lời, mới cúp máy được.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Đảm bảo tính thời gian thực - khi cần phản hồi ngay lập tức thì dùng cách này, không được trễ.</p>
+                <div class="callout info">
+                  <div class="callout-content">
+                    <p><strong>Ví dụ:</strong> Chương trình điều khiển phanh xe hỏi cảm biến "xe đang đi bao nhanh?" và phải có câu trả lời ngay.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3>When to Use Which?</h3>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Scenario</th>
+                  <th>POSIX Message Queues</th>
+                  <th>QNX Native Messaging</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Data Logging</strong></td>
+                  <td>Tốt - gửi và quên</td>
+                  <td>Thừa thãi - quá nhiều overhead</td>
+                </tr>
+                <tr>
+                  <td><strong>Device Control</strong></td>
+                  <td>Kém - không có xác nhận</td>
+                  <td>Xuất sắc - phản hồi có xác nhận</td>
+                </tr>
+                <tr>
+                  <td><strong>Network Communication</strong></td>
+                  <td>Hỗ trợ hạn chế</td>
+                  <td>Trong suốt - cùng API</td>
+                </tr>
+                <tr>
+                  <td><strong>Real-time Deadlines</strong></td>
+                  <td>Thời gian không dự đoán được</td>
+                  <td>Thời gian xác định</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section" id="code-examples">
+          <h2>Code Examples</h2>
+
+          <p>Week 2 includes 10 working code examples demonstrating all concepts:</p>
+
+          <div class="grid-3">
+            <div class="card">
+              <h4 class="card-title">Scheduling Examples</h4>
+              <ul>
+                <li><strong>sched_policy-1.c:</strong> Get/set priority và scheduling policy</li>
+                <li><strong>StressTestCPU-1.c:</strong> Multi-threaded CPU loading với thread affinity</li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Resource Monitoring</h4>
+              <ul>
+                <li><strong>CPU_Usage-1.c:</strong> Monitor CPU utilization via idle threads</li>
+                <li><strong>Resource_Utilization-1.c:</strong> System resource analysis với getrusage()</li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Message Passing Examples</h4>
+              <ul>
+                <li><strong>mq_send/receive-1.c:</strong> POSIX message queue patterns</li>
+                <li><strong>MsgPass-Server/Client-1.c:</strong> Named QNX messaging</li>
+                <li><strong>ConnCh-MsgPass variants:</strong> Channel-based messaging</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout success">
+            <div class="callout-title">Code Study Approach</div>
+            <div class="callout-content">
+              <p>Cho mỗi example, focus vào:</p>
+              <ol>
+                <li><strong>Purpose:</strong> Tại sao code này quan trọng</li>
+                <li><strong>Key APIs:</strong> Functions và patterns được demonstrate</li>
+                <li><strong>Common mistakes:</strong> Những lỗi cần avoid</li>
+                <li><strong>Lab application:</strong> Code sẽ appear trong lab nào</li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <!-- Lab Integration -->
+        <section class="section" id="lab-integration">
+          <h2>Lab Integration</h2>
+
+          <div class="grid-2">
+            <div class="card lab-card">
+              <h3 class="card-title">Lab 2: Concurrent Processes</h3>
+              <div class="card-description">
+                <p>Apply thread programming concepts:</p>
+                <ul>
+                  <li>pthread creation và management</li>
+                  <li>POSIX message queues implementation</li>
+                  <li>Basic scheduling control</li>
+                  <li>Error handling patterns</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card lab-card">
+              <h3 class="card-title">Lab 3: Mutual Exclusion</h3>
+              <div class="card-description">
+                <p>Build upon thread programming:</p>
+                <ul>
+                  <li>Race condition demonstration</li>
+                  <li>Mutex implementation</li>
+                  <li>Reader/Writer lock patterns</li>
+                  <li>Critical section protection</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card lab-card">
+              <h3 class="card-title">Lab 4: Advanced Synchronization</h3>
+              <div class="card-description">
+                <p>Advanced thread coordination:</p>
+                <ul>
+                  <li>Semaphore usage (named/unnamed)</li>
+                  <li>Barrier synchronization</li>
+                  <li>Condition variables</li>
+                  <li>Producer-consumer patterns</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card lab-card">
+              <h3 class="card-title">Lab 6: QNX Native IPC</h3>
+              <div class="card-description">
+                <p>Master QNX messaging:</p>
+                <ul>
+                  <li>Named channel implementation</li>
+                  <li>Cross-network communication</li>
+                  <li>Pulse handling</li>
+                  <li>Integration với previous labs</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Synchronization Overview -->
+        <section class="section" id="synchronization-overview">
+          <h2>Synchronization Overview</h2>
+
+          <div class="callout info">
+            <div class="callout-title">Preview cho Labs 3-6</div>
+            <div class="callout-content">
+              <p>Khi nhiều threads cùng làm việc, chúng cần "phối hợp" với nhau để tránh xung đột. Đây là preview các công cụ synchronization sẽ học trong labs sau.</p>
+            </div>
+          </div>
+
+          <h3>Tại sao cần đồng bộ hóa?</h3>
+
+          <div class="card">
+            <h4 class="card-title">Vấn đề Race Condition</h4>
+            <div class="card-description">
+              <p><strong>Ý nghĩa:</strong> Khi nhiều threads cùng truy cập một dữ liệu và kết quả phụ thuộc vào thứ tự thực thi (không đoán trước được).</p>
+              <p><strong>Hình dung:</strong> Như hai người cùng rút tiền từ một tài khoản cùng lúc - nếu không có kiểm soát, có thể rút được nhiều hơn số dư thực tế.</p>
+              <p><strong>Vai trò trong hệ thống:</strong> Gây ra bugs khó tìm vì chỉ xảy ra trong timing conditions đặc biệt.</p>
+              <div class="callout danger">
+                <div class="callout-content">
+                  <p><strong>Ví dụ thực tế:</strong> Thread A đọc counter = 100, Thread B cũng đọc counter = 100. Cả hai đều tăng lên 101 và ghi lại. Kết quả: counter = 101 thay vì 102!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3>Các công cụ đồng bộ hóa</h3>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4 class="card-title">Mutex (Mutual Exclusion)</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Một "khóa" chỉ cho phép một thread truy cập vùng dữ liệu tại một thời điểm.</p>
+                <p><strong>Hình dung:</strong> Như khóa phòng vệ sinh - chỉ một người được vào, người khác phải chờ đến khi có người ra và trả chìa khóa.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Bảo vệ dữ liệu chia sẻ khỏi race conditions bằng cách đảm bảo truy cập độc quyền.</p>
+                <div class="callout info">
+                  <div class="callout-content">
+                    <p><strong>API:</strong> pthread_mutex_lock(), pthread_mutex_unlock()</p>
+                    <p><strong>Lab 3:</strong> Sẽ implement mutex để fix race condition problems</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Semaphore</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Một "bộ đếm" cho phép một số lượng giới hạn threads truy cập resource cùng lúc.</p>
+                <p><strong>Hình dung:</strong> Như bãi đỗ xe có 5 chỗ - tối đa 5 xe được vào, xe thứ 6 phải chờ đến khi có xe ra.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Kiểm soát số lượng threads có thể dùng tài nguyên hạn chế đồng thời.</p>
+                <div class="callout info">
+                  <div class="callout-content">
+                    <p><strong>API:</strong> sem_wait(), sem_post(), sem_init()</p>
+                    <p><strong>Lab 4:</strong> Sẽ dùng semaphores cho producer-consumer patterns</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Barrier</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Một "checkpoint" buộc tất cả threads phải đợi đến khi mọi thread đều đến điểm này.</p>
+                <p><strong>Hình dung:</strong> Như tour guide chờ tất cả người trong đoàn tập trung tại một điểm trước khi tiếp tục.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Synchronize multiple threads để đảm bảo chúng di chuyển cùng nhau qua các phases.</p>
+                <div class="callout info">
+                  <div class="callout-content">
+                    <p><strong>API:</strong> pthread_barrier_init(), pthread_barrier_wait()</p>
+                    <p><strong>Lab 4:</strong> Sẽ implement 3-thread synchronization với barriers</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Condition Variables</h4>
+              <div class="card-description">
+                <p><strong>Ý nghĩa:</strong> Cho phép threads chờ đợi một điều kiện cụ thể được thỏa mãn.</p>
+                <p><strong>Hình dung:</strong> Như chờ đèn xanh tại ngã tư - không liên tục kiểm tra mà ngủ đợi đến khi có tín hiệu.</p>
+                <p><strong>Vai trò trong hệ thống:</strong> Efficient waiting mechanism thay vì busy polling (liên tục kiểm tra).</p>
+                <div class="callout info">
+                  <div class="callout-content">
+                    <p><strong>API:</strong> pthread_cond_wait(), pthread_cond_signal()</p>
+                    <p><strong>Lab 4:</strong> Producer-consumer với ring buffer sử dụng condition variables</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3>Synchronization Strategy Selection</h3>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Scenario</th>
+                  <th>Best Tool</th>
+                  <th>Reason</th>
+                  <th>Lab Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Protect shared counter</td>
+                  <td>Mutex</td>
+                  <td>Need exclusive access</td>
+                  <td>Lab 3 overlap problem</td>
+                </tr>
+                <tr>
+                  <td>Limit concurrent connections</td>
+                  <td>Semaphore</td>
+                  <td>Count-based control</td>
+                  <td>Lab 4 resource pool</td>
+                </tr>
+                <tr>
+                  <td>Wait for all threads to finish phase</td>
+                  <td>Barrier</td>
+                  <td>Group synchronization</td>
+                  <td>Lab 4 3-thread coordination</td>
+                </tr>
+                <tr>
+                  <td>Producer waits for buffer space</td>
+                  <td>Condition Variable</td>
+                  <td>Efficient condition waiting</td>
+                  <td>Lab 4 ring buffer</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout success">
+            <div class="callout-title">Learning Progression</div>
+            <div class="callout-content">
+              <p><strong>Week 2:</strong> Learn basic thread programming và message passing</p>
+              <p><strong>Lab 3:</strong> Apply mutex để solve race conditions</p>
+              <p><strong>Lab 4:</strong> Master advanced synchronization với semaphores, barriers, condition variables</p>
+              <p><strong>Lab 6:</strong> Combine synchronization với QNX native messaging</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Detailed Code Examples Section -->
+        <section class="section" id="detailed-examples">
+          <h2>Detailed Code Examples Analysis</h2>
+
+          <p>Week 2 có 10 code examples demonstrating all concepts. Đây là detailed analysis của key examples:</p>
+
+          <h3>1. Thread Creation & Scheduling (sched_policy-1.c)</h3>
+
+          <div class="card">
+            <h4 class="card-title">Purpose & Learning Goal</h4>
+            <div class="card-description">
+              <p><strong>What it demonstrates:</strong> How to get và set thread scheduling policies and priorities</p>
+              <p><strong>Why important:</strong> Essential pattern cho tất cả real-time applications</p>
+              <p><strong>Lab connection:</strong> Foundation cho Lab 2 thread programming</p>
+            </div>
+          </div>
+
+          <div class="callout qnx">
+            <div class="callout-title">Key Code Pattern</div>
+            <div class="callout-content">
+              <pre><code>struct sched_param param;
+int policy;
+
+// Get current scheduling info
+sched_getparam(0, &param);           // 0 = current thread
+policy = sched_getscheduler(0);
+
+// Set new priority
+param.sched_priority = 20;           // Higher number = higher priority
+sched_setparam(0, &param);
+
+// Set new policy
+sched_setscheduler(0, SCHED_FIFO, &param);</code></pre>
+              <p><strong>Line-by-line explanation:</strong></p>
+              <ul>
+                <li><strong>sched_getparam(0, &param):</strong> Lấy priority hiện tại của thread này (0 = current thread)</li>
+                <li><strong>sched_getscheduler(0):</strong> Lấy scheduling policy hiện tại (FIFO, RR, OTHER)</li>
+                <li><strong>param.sched_priority = 20:</strong> Set priority level (1-63, higher = more important)</li>
+                <li><strong>sched_setscheduler():</strong> Change cả policy và priority cùng lúc</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3>2. Message Queue Communication (mq_send/receive-1.c)</h3>
+
+          <div class="card">
+            <h4 class="card-title">POSIX Message Queue Pattern</h4>
+            <div class="card-description">
+              <p><strong>Sender side (mq_send-1.c):</strong></p>
+              <div class="callout info">
+                <div class="callout-content">
+                  <pre><code>// 1. Setup queue attributes
+struct mq_attr attr;
+attr.mq_maxmsg = 100;              // Max 100 messages in queue
+attr.mq_msgsize = MESSAGESIZE;     // Each message max size
+attr.mq_flags = 0;                 // Blocking mode
+
+// 2. Create/open queue
+mqd_t qd = mq_open("/test_queue",
+                   O_RDWR | O_CREAT,     // Read/write, create if not exist
+                   S_IRUSR | S_IWUSR,    // Permissions for user
+                   &attr);
+
+// 3. Send message
+char message[] = "Hello from sender";
+mq_send(qd, message, strlen(message), 0);  // Priority 0
+
+// 4. Cleanup
+mq_close(qd);</code></pre>
+                  <p><strong>Common mistakes to avoid:</strong></p>
+                  <ul>
+                    <li>Không check return values cho errors</li>
+                    <li>Forget mq_close() causing resource leaks</li>
+                    <li>Wrong message size causing truncation</li>
+                  </ul>
+                </div>
+              </div>
+
+              <p><strong>Receiver side (mq_receive-1.c):</strong></p>
+              <div class="callout info">
+                <div class="callout-content">
+                  <pre><code>// 1. Open existing queue (read-only)
+mqd_t qd = mq_open("/test_queue", O_RDONLY);
+
+// 2. Receive messages in loop
+char buffer[MESSAGESIZE];
+ssize_t bytes_read;
+
+while ((bytes_read = mq_receive(qd, buffer, MESSAGESIZE, NULL)) > 0) {
+    buffer[bytes_read] = '\0';     // Null terminate
+    printf("Received: '%s'\n", buffer);
+
+    if (strcmp(buffer, "done") == 0) break;  // Exit condition
+}
+
+// 3. Cleanup
+mq_close(qd);
+mq_unlink("/test_queue");  // Remove queue from system</code></pre>
+                  <p><strong>Key insights:</strong></p>
+                  <ul>
+                    <li><strong>mq_receive() blocks:</strong> Wait until message available</li>
+                    <li><strong>NULL terminate:</strong> Messages không automatically null-terminated</li>
+                    <li><strong>mq_unlink():</strong> Only receiver should remove queue</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3>3. QNX Native Messaging (MsgPass-Server/Client-1.c)</h3>
+
+          <div class="card">
+            <h4 class="card-title">Synchronous Client-Server Pattern</h4>
+            <div class="card-description">
+              <p><strong>Server side patterns:</strong></p>
+              <div class="callout qnx">
+                <div class="callout-content">
+                  <pre><code>// 1. Create named channel
+name_attach_t *attach = name_attach(NULL, "myserver", 0);
+if (!attach) {
+    perror("name_attach failed");
+    exit(1);
+}
+
+// 2. Message receive loop
+while (1) {
+    rcvid = MsgReceive(attach->chid, &msg, sizeof(msg), NULL);
+
+    if (rcvid == 0) {
+        // Pulse received - handle disconnect/unblock
+        if (msg.hdr.code == _PULSE_CODE_DISCONNECT) {
+            ConnectDetach(msg.hdr.scoid);
+        }
+    } else if (rcvid > 0) {
+        // Message received - process and reply
+        process_message(&msg);
+        MsgReply(rcvid, EOK, &reply, sizeof(reply));
+    } else {
+        // Error occurred
+        perror("MsgReceive failed");
+        break;
+    }
+}
+
+// 3. Cleanup
+name_detach(attach, 0);</code></pre>
+                  <p><strong>Critical server responsibilities:</strong></p>
+                  <ul>
+                    <li><strong>Handle pulses:</strong> Client disconnect events phải được xử lý</li>
+                    <li><strong>Always reply:</strong> Mọi message phải có reply, nếu không client bị hang</li>
+                    <li><strong>Error checking:</strong> rcvid values indicate different event types</li>
+                  </ul>
+                </div>
+              </div>
+
+              <p><strong>Client side patterns:</strong></p>
+              <div class="callout qnx">
+                <div class="callout-content">
+                  <pre><code>// 1. Connect to named server
+int server_coid = name_open("myserver", 0);
+if (server_coid == -1) {
+    perror("name_open failed");
+    exit(1);
+}
+
+// 2. Send request and wait for reply
+request_msg_t request;
+reply_msg_t reply;
+
+strcpy(request.data, "Hello server");
+request.client_id = getpid();
+
+if (MsgSend(server_coid, &request, sizeof(request),
+            &reply, sizeof(reply)) == -1) {
+    perror("MsgSend failed");
+    exit(1);
+}
+
+printf("Server replied: %s\n", reply.data);
+
+// 3. Cleanup
+name_close(server_coid);</code></pre>
+                  <p><strong>Client behavior:</strong></p>
+                  <ul>
+                    <li><strong>Blocking call:</strong> MsgSend() blocks until server replies</li>
+                    <li><strong>Atomic operation:</strong> Send request + receive reply trong one call</li>
+                    <li><strong>Network transparent:</strong> Same API cho local và remote servers</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <section class="section">
+          <div class="grid-2">
+            <a href="../Week01/index.html" class="card">
+              <h3 class="card-title">Week 1: Introduction</h3>
+              <div class="card-description">
+                Review real-time concepts và QNX architecture foundations.
+              </div>
+            </a>
+
+            <a href="../index.html" class="card">
+              <h3 class="card-title">Course Overview</h3>
+              <div class="card-description">
+                Return to course overview và assessment information.
+              </div>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop">↑</button>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+
+    <!-- JavaScript -->
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Week 1: Introduction to Real-Time Systems - RTS Learning</title>
+    <meta name="description" content="Tuần 1: Real-Time Systems, QNX Neutrino microkernel, và assessment strategy cho môn EEET2588" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+  </head>
+
+  <body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar-container">
+      <div class="sidebar-header">
+        <h2>Week 1</h2>
+        <p class="sidebar-subtitle">Introduction to Real-Time Systems</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <h3>Content Sections</h3>
+        <ul>
+          <li><a href="#definitions" class="lecture-link exam-critical">Real-Time Definitions</a></li>
+          <li><a href="#types" class="lecture-link exam-critical">Types of Real-Time</a></li>
+          <li><a href="#examples" class="lecture-link">Practical Examples</a></li>
+          <li><a href="#qnx-architecture" class="lecture-link exam-critical">QNX Architecture</a></li>
+          <li><a href="#microkernel" class="lecture-link">Microkernel vs Monolithic</a></li>
+          <li><a href="#assessment" class="lecture-link">Assessment Strategy</a></li>
+          <li><a href="#grading" class="lecture-link">Grading Breakdown</a></li>
+          <li><a href="#success-tips" class="lecture-link">Success Tips</a></li>
+          <li><a href="#lab-overview" class="lab-link">Lab Overview</a></li>
+          <li><a href="#code-examples" class="lecture-link">Code Examples</a></li>
+        </ul>
+
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="../index.html">Course Overview</a></li>
+          <li><a href="../Week02/index.html">Week 2</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+          <ul class="breadcrumb-list">
+            <li class="breadcrumb-item"><a href="../index.html" class="breadcrumb-link">Course</a></li>
+            <li class="breadcrumb-item"><span class="breadcrumb-current">Week 1</span></li>
+          </ul>
+        </nav>
+
+        <!-- Content Header -->
+        <div class="content-header">
+          <h1>Week 1: Introduction to Real-Time Systems</h1>
+          <div class="meta">
+            <span class="content-tag lecture">Lectures</span>
+            <span class="content-tag lab">Lab</span>
+            <span class="content-tag exam-critical">Exam Critical</span>
+            <span class="content-tag qnx">QNX Neutrino</span>
+          </div>
+        </div>
+
+        <!-- Real-Time Systems Definitions -->
+        <section class="section" id="definitions">
+          <h2>Real-Time Systems Definitions</h2>
+
+          <div class="card">
+            <h4 class="card-title">Real-Time System</h4>
+            <div class="card-description">
+              <p><strong>Meaning:</strong> Một hệ thống mà tính đúng đắn phụ thuộc vào cả kết quả VÀ thời gian hoàn thành.</p>
+              <p><strong>Imagine:</strong> Như máy cứu hỏa - không chỉ phải đúng địa chỉ mà còn phải đến kịp thời, nếu không nhà cháy hết.</p>
+              <p><strong>Role in system:</strong> Đảm bảo chương trình không chỉ cho kết quả đúng mà còn cho kết quả ĐÚNG GIỜ.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4 class="card-title">Deadline</h4>
+            <div class="card-description">
+              <p><strong>Meaning:</strong> Thời hạn phải hoàn thành một công việc.</p>
+              <p><strong>Imagine:</strong> Như giờ tàu chạy - tàu 8h00 phải khởi hành đúng 8h00, không thể chậm 5 phút.</p>
+              <p><strong>Role in system:</strong> Quyết định xem system có đáng tin cậy không trong các tình huống quan trọng.</p>
+            </div>
+          </div>
+
+          <h3>Real-Time KHÔNG có nghĩa là "nhanh"</h3>
+
+          <p>Đây là hiểu nhầm phổ biến nhất. Real-time = "đúng giờ", không phải "nhanh":</p>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Hệ thống</th>
+                  <th>Thời gian xử lý</th>
+                  <th>Có phải Real-Time?</th>
+                  <th>Lý do</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Supercomputer tính Pi</td>
+                  <td>1 giờ</td>
+                  <td>Không</td>
+                  <td>Không có deadline cụ thể</td>
+                </tr>
+                <tr>
+                  <td>Pacemaker (máy trợ tim)</td>
+                  <td>100ms</td>
+                  <td>Có</td>
+                  <td>Phải đáp ứng trong 100ms, nếu không người bệnh có thể tử vong</td>
+                </tr>
+                <tr>
+                  <td>ATM rút tiền</td>
+                  <td>3 giây</td>
+                  <td>Có</td>
+                  <td>Khách hàng chờ quá lâu sẽ bỏ đi</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout info">
+            <div class="callout-title">Key Insight</div>
+            <div class="callout-content">
+              <p>Real-Time = <strong>Timely (kịp thời)</strong>, không phải Fast (nhanh)</p>
+              <p>Một hệ thống chậm nhưng đáp ứng đúng deadline vẫn tốt hơn một hệ thống nhanh nhưng không đáng tin cậy về thời gian.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Types of Real-Time -->
+        <section class="section" id="types">
+          <h2>Ba loại Real-Time Systems</h2>
+
+          <p>Đây là phần <strong>cực kỳ quan trọng cho kiểm tra</strong>. Bạn cần phân biệt rõ ba loại và cho được ví dụ cụ thể:</p>
+
+          <div class="grid-3">
+            <div class="card exam-card">
+              <h3 class="card-title">Hard Real-Time</h3>
+              <div class="card-description">
+                <strong>Missing deadline = Catastrophic failure</strong>
+                <p>Không được phép miss deadline. Nếu miss thì hậu quả thảm khốc, có thể dẫn đến chết người hoặc thiệt hại nghiêm trọng.</p>
+              </div>
+              <div class="callout danger">
+                <div class="callout-title">Ví dụ Hard Real-Time</div>
+                <div class="callout-content">
+                  <ul>
+                    <li><strong>Flight control system:</strong> Miss deadline → máy bay rơi</li>
+                    <li><strong>Nuclear plant safety:</strong> Miss deadline → nổ lò phản ứng</li>
+                    <li><strong>Airbag deployment:</strong> Miss deadline → không bung kịp</li>
+                    <li><strong>Pacemaker:</strong> Miss deadline → tim ngừng đập</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">Soft Real-Time</h3>
+              <div class="card-description">
+                <strong>Missing deadline = Annoying but not catastrophic</strong>
+                <p>Cho phép miss deadline thỉnh thoảng. Performance giảm nhưng hệ thống vẫn hoạt động được.</p>
+              </div>
+              <div class="callout warning">
+                <div class="callout-title">Ví dụ Soft Real-Time</div>
+                <div class="callout-content">
+                  <ul>
+                    <li><strong>Video conferencing:</strong> Lag 1-2 giây → khó chịu nhưng vẫn dùng được</li>
+                    <li><strong>Web services:</strong> Response time chậm → user experience kém</li>
+                    <li><strong>Online gaming:</strong> High ping → gameplay không smooth</li>
+                    <li><strong>ATM transactions:</strong> Chậm 10 giây → khách hàng bực mình</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">Firm Real-Time</h3>
+              <div class="card-description">
+                <strong>Results after deadline = Zero value</strong>
+                <p>Không catastrophic nhưng kết quả sau deadline hoàn toàn vô dụng và bị reject.</p>
+              </div>
+              <div class="callout info">
+                <div class="callout-title">Ví dụ Firm Real-Time</div>
+                <div class="callout-content">
+                  <ul>
+                    <li><strong>Video QoS:</strong> Frame đến muộn → bỏ qua, không hiển thị</li>
+                    <li><strong>Live streaming:</strong> Data packet chậm → drop luôn</li>
+                    <li><strong>Real-time audio:</strong> Sample muộn → skip frame</li>
+                    <li><strong>Sensor sampling:</strong> Reading chậm → ignore data point</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Practical Examples -->
+        <section class="section" id="examples">
+          <h2>Ví dụ thực tế dễ hiểu</h2>
+
+          <h3>Ví dụ 1: Hệ thống ATM</h3>
+
+          <div class="callout qnx">
+            <div class="callout-title">Scenario: Bạn rút tiền từ ATM</div>
+            <div class="callout-content">
+              <p><strong>User perspective:</strong> Nhấn "Rút 500k" → Chờ → Nhận tiền</p>
+              <p><strong>Real-time requirements:</strong></p>
+              <ul>
+                <li>Response time: ≤ 5 giây (nếu chậm hơn, khách hàng nghĩ ATM bị lỗi)</li>
+                <li>Security check: ≤ 2 giây (verify account balance)</li>
+                <li>Hardware control: ≤ 1 giây (dispenser mechanism)</li>
+              </ul>
+              <p><strong>Type:</strong> Soft Real-Time (chậm thì khó chịu, nhưng không ai chết)</p>
+            </div>
+          </div>
+
+          <h3>Ví dụ 2: Flight Control System</h3>
+
+          <div class="callout danger">
+            <div class="callout-title">Scenario: Turbulence trong lúc bay</div>
+            <div class="callout-content">
+              <p><strong>System perspective:</strong> Sensor detect turbulence → Adjust control surfaces → Stabilize aircraft</p>
+              <p><strong>Real-time requirements:</strong></p>
+              <ul>
+                <li>Sensor reading: ≤ 10ms (detect attitude change)</li>
+                <li>Control calculation: ≤ 20ms (compute correction)</li>
+                <li>Actuator response: ≤ 50ms (move control surfaces)</li>
+              </ul>
+              <p><strong>Type:</strong> Hard Real-Time (miss deadline → crash → people die)</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- QNX Architecture -->
+        <section class="section" id="qnx-architecture">
+          <h2>QNX Neutrino Architecture</h2>
+
+          <div class="card">
+            <h4 class="card-title">QNX Neutrino Microkernel</h4>
+            <div class="card-description">
+              <p><strong>Meaning:</strong> Một hệ điều hành real-time với phần nhân rất nhỏ (dưới 400KB) chỉ làm những việc cần thiết nhất.</p>
+              <p><strong>Imagine:</strong> Như một quản lý chung cư tối giản - chỉ lo về bảo vệ, phân phòng, và điện nước cơ bản. Tất cả dịch vụ khác (giặt ủi, dọn dẹp, nấu ăn) thuê ngoài.</p>
+              <p><strong>Role in system:</strong> Đảm bảo tốc độ và độ tin cậy cao bằng cách giữ phần nhân đơn giản và để các dịch vụ khác chạy riêng biệt.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h4 class="card-title">Microkernel vs Monolithic Kernel</h4>
+            <div class="card-description">
+              <p><strong>Meaning:</strong> Hai cách thiết kế hệ điều hành khác nhau - tập trung vs phân tán.</p>
+              <p><strong>Imagine:</strong> Monolithic như siêu thị lớn có tất cả trong một tòa nhà. Microkernel như trung tâm thương mại có nhiều cửa hàng nhỏ riêng biệt.</p>
+              <p><strong>Role in system:</strong> Microkernel an toàn hơn vì một phần lỗi không làm sập cả hệ thống, nhưng chậm hơn vì phải liên lạc giữa các phần.</p>
+            </div>
+          </div>
+
+          <h3>Core Services của QNX</h3>
+
+          <p>QNX microkernel chỉ lo 4 việc cơ bản nhất:</p>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4 class="card-title">1. Process & Thread Management</h4>
+              <div class="card-description">
+                <ul>
+                  <li>Tạo và quản lý các chương trình đang chạy</li>
+                  <li>Luôn ưu tiên task quan trọng nhất (ngắt task thường ngay lập tức)</li>
+                  <li>Chuyển giữa các chương trình cực nhanh (dưới 1μs)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">2. Memory Management</h4>
+              <div class="card-description">
+                <ul>
+                  <li>Bảo vệ vùng nhớ của mỗi chương trình (không ai vào được vùng nhớ của người khác)</li>
+                  <li>Cấp phát và thu hồi bộ nhớ khi cần</li>
+                  <li>Phát hiện lỗi memory và ngăn chặn crash toàn hệ thống</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">3. Interrupt Handling</h4>
+              <div class="card-description">
+                <ul>
+                  <li>Xử lý tín hiệu từ hardware ngay lập tức</li>
+                  <li>Phản ứng siêu nhanh với hardware (dưới 1.5μs)</li>
+                  <li>Ưu tiên tuyệt đối cho tín hiệu từ hardware</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">4. Inter-Process Communication</h4>
+              <div class="card-description">
+                <ul>
+                  <li>Gửi tin nhắn và chờ phản hồi (như gọi điện)</li>
+                  <li>Gửi thông báo không cần chờ (như gửi SMS)</li>
+                  <li>Liên lạc giữa máy khác nhau qua mạng (transparent)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Microkernel vs Monolithic -->
+        <section class="section" id="microkernel">
+          <h2>Microkernel vs Monolithic Kernel</h2>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspect</th>
+                  <th>Monolithic Kernel (Linux/Windows)</th>
+                  <th>Microkernel (QNX)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Kernel Size</strong></td>
+                  <td>~20-100MB (toàn bộ OS trong kernel space)</td>
+                  <td><400KB (chỉ core services)</td>
+                </tr>
+                <tr>
+                  <td><strong>Drivers Location</strong></td>
+                  <td>Kernel space (privileged mode)</td>
+                  <td>User space (isolated processes)</td>
+                </tr>
+                <tr>
+                  <td><strong>System Crash Risk</strong></td>
+                  <td>Một driver lỗi → toàn bộ hệ thống crash</td>
+                  <td>Driver lỗi → chỉ process đó crash</td>
+                </tr>
+                <tr>
+                  <td><strong>Performance</strong></td>
+                  <td>Ít context switching (nhanh)</td>
+                  <td>Nhiều IPC overhead (chậm hơn)</td>
+                </tr>
+                <tr>
+                  <td><strong>Reliability</strong></td>
+                  <td>Thấp (single point of failure)</td>
+                  <td>Cao (fault containment)</td>
+                </tr>
+                <tr>
+                  <td><strong>Real-Time</strong></td>
+                  <td>Khó đảm bảo (code path phức tạp)</td>
+                  <td>Deterministic (code path ngắn)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout success">
+            <div class="callout-title">Key Benefit của Fault Containment</div>
+            <div class="callout-content">
+              <ul>
+                <li><strong>Graceful degradation:</strong> System vẫn hoạt động với reduced functionality</li>
+                <li><strong>Hot swapping:</strong> Replace faulty components without reboot</li>
+                <li><strong>Continuous operation:</strong> Critical processes không bị ảnh hưởng</li>
+                <li><strong>Easier debugging:</strong> Lỗi được localize trong specific process</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Assessment Strategy -->
+        <section class="section" id="assessment">
+          <h2>Assessment Strategy</h2>
+
+          <div class="assessment-progress">
+            <div class="assessment-item">
+              <div class="assessment-percentage">15%</div>
+              <div class="assessment-label">Laboratory Assessment</div>
+              <p class="text-small">Individual work, early feedback</p>
+            </div>
+            <div class="assessment-item">
+              <div class="assessment-percentage">10%</div>
+              <div class="assessment-label">In-class Quizzes</div>
+              <p class="text-small">Individual, Week 4 & 6</p>
+            </div>
+            <div class="assessment-item">
+              <div class="assessment-percentage">10%</div>
+              <div class="assessment-label">Group Project Design</div>
+              <p class="text-small">Initial report, Week 9</p>
+            </div>
+            <div class="assessment-item">
+              <div class="assessment-percentage">40%</div>
+              <div class="assessment-label">Group Project Implementation</div>
+              <p class="text-small">Final demo & code, Week 12</p>
+            </div>
+            <div class="assessment-item">
+              <div class="assessment-percentage">25%</div>
+              <div class="assessment-label">Written Assessment/Exam</div>
+              <p class="text-small">Individual, Week 10</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Grading Breakdown -->
+        <section class="section" id="grading">
+          <h2>Strategic Analysis</h2>
+
+          <div class="grid-2">
+            <div class="card exam-card">
+              <h4 class="card-title">High Impact Components (75%)</h4>
+              <ul>
+                <li><strong>Group Project Total: 50%</strong>
+                  <ul>
+                    <li>Design Report: 10%</li>
+                    <li>Implementation: 40%</li>
+                    <li>Individual contributions evaluated</li>
+                  </ul>
+                </li>
+                <li><strong>Written Exam: 25%</strong>
+                  <ul>
+                    <li>Week 10 (late in semester)</li>
+                    <li>Individual assessment</li>
+                    <li>Theory + practical concepts</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Early Feedback (25%)</h4>
+              <ul>
+                <li><strong>Lab Assessment: 15%</strong>
+                  <ul>
+                    <li>Individual work</li>
+                    <li>Early feedback mechanism</li>
+                    <li>Foundation for later work</li>
+                  </ul>
+                </li>
+                <li><strong>Quizzes: 10%</strong>
+                  <ul>
+                    <li>Week 4: Early feedback</li>
+                    <li>Week 6: Before major exam</li>
+                    <li>Practice for final exam</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout warning">
+            <div class="callout-title">Penalty Structure</div>
+            <div class="callout-content">
+              <ul>
+                <li><strong>10% per day</strong> late (harsh penalty!)</li>
+                <li><strong>Zero marks</strong> after 3 days</li>
+                <li>No exceptions unless pre-approved</li>
+                <li>Plan buffer time cho technical issues</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Success Tips -->
+        <section class="section" id="success-tips">
+          <h2>Success Tips (từ Instructor)</h2>
+
+          <div class="callout success">
+            <div class="callout-title">Instructor's Exact Words</div>
+            <div class="callout-content">
+              <p><em>"The amount of info can be overwhelming at first. Please take note from the lecture - you can know the key takeaway for each slide/module."</em></p>
+              <p>Translation: Đừng cố gắng nhớ everything, focus vào <strong>key concepts</strong>.</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4 class="card-title">Pre-Lecture Preparation</h4>
+              <div class="card-description">
+                <p><strong>"Read and try to understand all terms BEFORE lecture"</strong></p>
+                <ul>
+                  <li>Đọc lecture slides trước 24h</li>
+                  <li>Look up unfamiliar terms</li>
+                  <li>Prepare questions về những gì không hiểu</li>
+                  <li>Skim qua lab exercises related</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Active Participation</h4>
+              <div class="card-description">
+                <p><strong>"Attend all sessions on time, participate"</strong></p>
+                <ul>
+                  <li>Instructor nhận ra engaged students</li>
+                  <li>Get clarification real-time</li>
+                  <li>Better understanding qua discussion</li>
+                  <li>Networking với classmates cho group project</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Early Group Formation</h4>
+              <div class="card-description">
+                <p><strong>"Form and work with groups as soon as possible"</strong></p>
+                <ul>
+                  <li><strong>Complementary skills:</strong> C programming, hardware, documentation</li>
+                  <li><strong>Similar commitment level:</strong> Agree on effort expectations</li>
+                  <li><strong>Communication:</strong> Regular meeting schedules</li>
+                  <li><strong>Reliability:</strong> Meet deadlines and commitments</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">Communication & Help-Seeking</h4>
+              <div class="card-description">
+                <p><strong>"ASK QUESTIONS" (emphasized multiple times)</strong></p>
+                <ul>
+                  <li><strong>Canvas Q&A Discussion:</strong> Learning questions, lab exercises</li>
+                  <li><strong>Email Dr. Linh Tran:</strong> Personal difficulties, issues</li>
+                  <li><strong>In-class:</strong> Immediate clarification</li>
+                  <li><strong>Office hours:</strong> Deep technical discussions</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Lab Overview -->
+        <section class="section" id="lab-overview">
+          <h2>Lab Overview</h2>
+
+          <p>Lab 1 provides hands-on introduction to QNX development environment:</p>
+
+          <div class="grid-2">
+            <div class="card lab-card">
+              <h3 class="card-title">Lab Objectives</h3>
+              <div class="card-description">
+                <ul>
+                  <li>Familiarize với QNX Momentics IDE</li>
+                  <li>Basic C programming trong QNX environment</li>
+                  <li>Process monitoring với `pidin` command</li>
+                  <li>Network configuration và target deployment</li>
+                  <li>Documentation practices cho lab reports</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title">Assessment Requirements</h3>
+              <div class="card-description">
+                <ul>
+                  <li>Screenshots từ Momentics, QNX Target VM, Telnet terminal</li>
+                  <li>Code với student number, process ID, hostname</li>
+                  <li>Note documentation với diagrams</li>
+                  <li>Proper formatting và professional presentation</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section" id="code-examples">
+          <h2>Code Examples</h2>
+
+          <div class="grid-2">
+            <div class="card">
+              <h4 class="card-title">sample-1.c</h4>
+              <div class="card-description">
+                <p>Basic C program demonstrating QNX system calls:</p>
+                <ul>
+                  <li>Process ID retrieval với `getpid()`</li>
+                  <li>Hostname information với `gethostname()`</li>
+                  <li>Memory operations với `memset()`</li>
+                  <li>Basic I/O với `printf()` formatting</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4 class="card-title">sample-1.cpp</h4>
+              <div class="card-description">
+                <p>C++ variant showing language compatibility:</p>
+                <ul>
+                  <li>iostream usage trong QNX environment</li>
+                  <li>Mixed C/C++ programming patterns</li>
+                  <li>Compiler differences và compatibility</li>
+                  <li>Best practices cho embedded C++</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <section class="section">
+          <div class="grid-2">
+            <a href="../index.html" class="card">
+              <h3 class="card-title">Course Overview</h3>
+              <div class="card-description">
+                Return to course overview và assessment breakdown.
+              </div>
+            </a>
+
+            <a href="../Week02/index.html" class="card">
+              <h3 class="card-title">Week 2: Concurrent Processes</h3>
+              <div class="card-description">
+                Continue to thread programming và message passing concepts.
+              </div>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop">↑</button>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+
+    <!-- JavaScript -->
+    <script src="../assets/js/main.js"></script>
+  </body>
+</html>

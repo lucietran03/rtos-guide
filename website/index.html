@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Realtime Systems Engineering - Tài liệu học tập tương tác</title>
+    <meta name="description" content="Website học tập tương tác cho môn Realtime Systems Engineering (EEET2588) - Hệ thống hướng dẫn từng bước về QNX Neutrino RTOS, lập trình đồng thời, và message passing." />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <style>
+      /* Homepage specific styles */
+      .homepage {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-xl) 5%;
+        background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-gray-50) 100%);
+      }
+
+      .homepage-content {
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .homepage h1 {
+        font-size: var(--font-size-5xl);
+        margin-bottom: var(--space-lg);
+        border-bottom: none;
+        text-align: center;
+        background: linear-gradient(135deg, var(--color-accent), var(--color-qnx));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: var(--color-accent);
+      }
+
+      .homepage .subtitle {
+        font-size: var(--font-size-xl);
+        color: var(--color-gray-600);
+        margin-bottom: var(--space-2xl);
+        text-align: center;
+        max-width: 800px;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: var(--line-height-relaxed);
+      }
+
+      .course-info {
+        background: var(--color-bg);
+        border: 1px solid var(--color-gray-200);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2xl);
+        margin-bottom: var(--space-3xl);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .course-info h2 {
+        border-bottom: 2px solid var(--color-qnx);
+        color: var(--color-qnx);
+        margin-bottom: var(--space-xl);
+      }
+
+      .course-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+      }
+
+      .meta-item {
+        text-align: center;
+        padding: var(--space-lg);
+        background: var(--color-gray-50);
+        border-radius: var(--radius-md);
+      }
+
+      .meta-value {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-accent);
+        margin-bottom: var(--space-sm);
+      }
+
+      .meta-label {
+        font-size: var(--font-size-sm);
+        color: var(--color-gray-600);
+      }
+
+      .week-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: var(--space-xl);
+        margin-top: var(--space-2xl);
+      }
+
+      .week-card {
+        background: var(--color-bg);
+        border: 2px solid var(--color-gray-200);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2xl);
+        text-decoration: none;
+        color: var(--color-text);
+        transition: all var(--transition-base);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .week-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--color-accent), var(--color-qnx));
+      }
+
+      .week-card:hover {
+        border-color: var(--color-accent);
+        box-shadow: var(--shadow-2xl);
+        transform: translateY(-6px);
+      }
+
+      .week-number {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-accent);
+        margin-bottom: var(--space-sm);
+      }
+
+      .week-title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-md);
+        border-bottom: none;
+        color: var(--color-text);
+      }
+
+      .week-description {
+        color: var(--color-gray-600);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--space-lg);
+      }
+
+      .week-topics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-lg);
+      }
+
+      .topic-tag {
+        padding: var(--space-xs) var(--space-sm);
+        background: var(--color-accent-light);
+        color: var(--color-accent);
+        border-radius: var(--radius-sm);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+      }
+
+      .week-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--space-md);
+        border-top: 1px solid var(--color-gray-200);
+        font-size: var(--font-size-sm);
+        color: var(--color-gray-600);
+      }
+
+      .assessment-overview {
+        background: linear-gradient(135deg, var(--color-exam-bg), var(--color-warning-bg));
+        border: 2px solid var(--color-exam);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2xl);
+        margin-top: var(--space-3xl);
+      }
+
+      .assessment-overview h2 {
+        color: var(--color-exam);
+        border-bottom-color: var(--color-exam);
+        margin-bottom: var(--space-xl);
+      }
+
+      .assessment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--space-lg);
+      }
+
+      .assessment-item {
+        background: var(--color-bg);
+        padding: var(--space-lg);
+        border-radius: var(--radius-md);
+        text-align: center;
+        border: 1px solid var(--color-gray-200);
+      }
+
+      .assessment-percentage {
+        font-size: var(--font-size-3xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-exam);
+        margin-bottom: var(--space-sm);
+      }
+
+      .assessment-label {
+        font-size: var(--font-size-sm);
+        color: var(--color-gray-700);
+        font-weight: var(--font-weight-medium);
+      }
+
+      @media (max-width: 768px) {
+        .homepage h1 {
+          font-size: var(--font-size-4xl);
+        }
+
+        .homepage .subtitle {
+          font-size: var(--font-size-lg);
+        }
+
+        .week-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .course-meta {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .assessment-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body class="homepage-layout no-transition">
+    <div class="homepage">
+      <div class="homepage-content">
+        <h1>Realtime Systems Engineering</h1>
+        <p class="subtitle">
+          Website học tập tương tác cho môn EEET2588 - Hướng dẫn từng bước về QNX Neutrino RTOS, lập trình đồng thời, và message passing với lời giải thích bằng tiếng Việt dễ hiểu.
+        </p>
+
+        <!-- Course Information -->
+        <div class="course-info">
+          <h2>Thông tin khóa học</h2>
+          <div class="course-meta">
+            <div class="meta-item">
+              <div class="meta-value">EEET2588</div>
+              <div class="meta-label">Mã môn học</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-value">QNX Neutrino</div>
+              <div class="meta-label">RTOS Platform</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-value">C/POSIX</div>
+              <div class="meta-label">Ngôn ngữ lập trình</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-value">2 Tuần</div>
+              <div class="meta-label">Nội dung hiện tại</div>
+            </div>
+          </div>
+
+          <div class="callout info">
+            <div class="callout-title">Mục tiêu học tập</div>
+            <div class="callout-content">
+              <p>Website này được thiết kế đặc biệt cho sinh viên Software Engineering đã biết Java/Python nhưng mới bắt đầu với Realtime Systems. Tất cả khái niệm được giải thích bằng <strong>tiếng Việt dễ hiểu</strong> với <strong>ví dụ thực tế</strong>, tập trung vào kiến thức <strong>quan trọng cho bài kiểm tra và assignment</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assessment Overview -->
+        <div class="assessment-overview">
+          <h2>Cơ cấu điểm đánh giá</h2>
+          <div class="assessment-grid">
+            <div class="assessment-item">
+              <div class="assessment-percentage">15%</div>
+              <div class="assessment-label">Lab Reports</div>
+            </div>
+            <div class="assessment-item">
+              <div class="assessment-percentage">10%</div>
+              <div class="assessment-label">Quizzes</div>
+            </div>
+            <div class="assessment-item">
+              <div class="assessment-percentage">10%</div>
+              <div class="assessment-label">Group Project Design</div>
+            </div>
+            <div class="assessment-item">
+              <div class="assessment-percentage">40%</div>
+              <div class="assessment-label">Group Project Implementation</div>
+            </div>
+            <div class="assessment-item">
+              <div class="assessment-percentage">25%</div>
+              <div class="assessment-label">Written Exam</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Week Navigation -->
+        <div class="week-grid">
+          <a href="Week01/index.html" class="week-card">
+            <div class="week-number">TUẦN 1</div>
+            <h3 class="week-title">Introduction to Real-Time Systems</h3>
+            <p class="week-description">
+              Tìm hiểu về hệ thống thời gian thực, phân biệt hard/soft/firm real-time, kiến trúc QNX Neutrino microkernel, và cách chuẩn bị môi trường phát triển.
+            </p>
+            <div class="week-topics">
+              <span class="topic-tag">Real-Time Definitions</span>
+              <span class="topic-tag">QNX Architecture</span>
+              <span class="topic-tag">Setup Guide</span>
+              <span class="topic-tag">Assessment Strategy</span>
+            </div>
+            <div class="week-stats">
+              <span>4 bài lecture</span>
+              <span>Lab 1 walkthrough</span>
+              <span>2 code examples</span>
+            </div>
+          </a>
+
+          <a href="Week02/index.html" class="week-card">
+            <div class="week-number">TUẦN 2</div>
+            <h3 class="week-title">Concurrent Processes & Message Passing</h3>
+            <p class="week-description">
+              Học về thread lifecycle, POSIX APIs, scheduling policies, POSIX message queues vs QNX native messaging. Bao gồm 10 code examples với giải thích từng dòng.
+            </p>
+            <div class="week-topics">
+              <span class="topic-tag">Threads & Processes</span>
+              <span class="topic-tag">Scheduling</span>
+              <span class="topic-tag">Message Passing</span>
+              <span class="topic-tag">Synchronization</span>
+            </div>
+            <div class="week-stats">
+              <span>5 bài lecture</span>
+              <span>4 lab guides</span>
+              <span>10 code examples</span>
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+
+    <!-- JavaScript -->
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
